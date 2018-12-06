@@ -1,6 +1,7 @@
 package com.trafficmon;
 
 import  java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class CongestionChargeSystem {
@@ -55,10 +56,47 @@ public class CongestionChargeSystem {
     }
 
     private BigDecimal calculateCharge(BigDecimal duration) {
-        if ( duration > (240)
+
+        BigDecimal fourHours = new BigDecimal(240.0);
+        BigDecimal charge = new BigDecimal(0);
+
+        int comparison = duration.compareTo(fourHours);
+        if (comparison == 1) {
+            charge = new BigDecimal(12);
+        }
+
+        if (isBefore2pm())
+
+        return charge;
     }
 
+    private boolean isBefore2pm(List<ZoneBoundaryCrossing> crossings) {
+        long firstTime = 0;
+        ZoneBoundaryCrossing lastEvent = crossings.get(0);
 
+        if (lastEvent instanceof EntryEvent) {
+            firstTime = lastEvent.timestamp();
+        }
+        else {
+            lastEvent = crossings.get(1);
+            firstTime = lastEvent.timestamp();
+        }
+
+        SimpleDateFormat sdf = new SimpleDateFormat("HHmm");
+        Date resultdate = new sdf.(firstTime);
+
+        String string = resultdate.toString();
+        String twopm = "1400";
+
+        int comparison = string.compareTo(twopm);
+
+        if (comparison > 0) {
+            return  true;
+        }
+        if (comparison <= 0) {
+            return false;
+        }
+    }
 
     private BigDecimal calculateDurationInZone(List<ZoneBoundaryCrossing> crossings) {
 
