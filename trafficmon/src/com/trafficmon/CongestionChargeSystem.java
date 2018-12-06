@@ -1,12 +1,10 @@
 package com.trafficmon;
 
-import java.math.BigDecimal;
+import  java.math.BigDecimal;
 import java.util.*;
 
 public class CongestionChargeSystem {
-
-    public static final BigDecimal CHARGE_RATE_POUNDS_PER_MINUTE = new BigDecimal(0.05);
-
+    
     private final List<ZoneBoundaryCrossing> eventLog = new ArrayList<ZoneBoundaryCrossing>();
 
     public void vehicleEnteringZone(Vehicle vehicle) {
