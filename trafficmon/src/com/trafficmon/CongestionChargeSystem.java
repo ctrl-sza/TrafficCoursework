@@ -4,8 +4,12 @@ import  java.math.BigDecimal;
 import java.util.*;
 
 public class CongestionChargeSystem {
-    
+
     private final List<ZoneBoundaryCrossing> eventLog = new ArrayList<ZoneBoundaryCrossing>();
+    /*
+        every time vehicle crosses boundary, ZBC added to event log.
+        ZBC contains reference to vehicle and time of that crossing
+     */
 
     public void vehicleEnteringZone(Vehicle vehicle) {
         eventLog.add(new EntryEvent(vehicle));
@@ -23,10 +27,10 @@ public class CongestionChargeSystem {
         Map<Vehicle, List<ZoneBoundaryCrossing>> crossingsByVehicle = new HashMap<Vehicle, List<ZoneBoundaryCrossing>>();
 
         for (ZoneBoundaryCrossing crossing : eventLog) {
-            if (!crossingsByVehicle.containsKey(crossing.getVehicle())) {
-                crossingsByVehicle.put(crossing.getVehicle(), new ArrayList<ZoneBoundaryCrossing>());
+            if (!crossingsByVehicle.containsKey(crossing.getVehicle())) { // if vehicle not in crossingsByVehicle
+                crossingsByVehicle.put(crossing.getVehicle(), new ArrayList<ZoneBoundaryCrossing>()); // add key (vehicle) and value (empty arraylist)
             }
-            crossingsByVehicle.get(crossing.getVehicle()).add(crossing);
+            crossingsByVehicle.get(crossing.getVehicle()).add(crossing); // gets arraylist (value in hash map) and adds ZBC to it
         }
 
         for (Map.Entry<Vehicle, List<ZoneBoundaryCrossing>> vehicleCrossings : crossingsByVehicle.entrySet()) {
@@ -34,10 +38,10 @@ public class CongestionChargeSystem {
             List<ZoneBoundaryCrossing> crossings = vehicleCrossings.getValue();
 
             if (!checkOrderingOf(crossings)) {
-                OperationsTeam.getInstance().triggerInvestigationInto(vehicle);
+                OperationsTeam.getInstance().triggerInvestigationInto(vehicle); // if times of entry and exit not in time order trigger inspection
             } else {
 
-                BigDecimal charge = calculateChargeForTimeInZone(crossings);
+                BigDecimal charge = calculateDurationInZone(crossings);
 
                 try {
                     RegisteredCustomerAccountsService.getInstance().accountFor(vehicle).deduct(charge);
@@ -50,24 +54,30 @@ public class CongestionChargeSystem {
         }
     }
 
-    private BigDecimal calculateChargeForTimeInZone(List<ZoneBoundaryCrossing> crossings) {
+    private BigDecimal calculateCharge(BigDecimal duration) {
+        if ( duration > (240)
+    }
 
-        BigDecimal charge = new BigDecimal(0);
 
-        ZoneBoundaryCrossing lastEvent = crossings.get(0);
+
+    private BigDecimal calculateDurationInZone(List<ZoneBoundaryCrossing> crossings) {
+
+        BigDecimal duration = new BigDecimal(0);
+
+        ZoneBoundaryCrossing lastEvent = crossings.get(0); //same
+
 
         for (ZoneBoundaryCrossing crossing : crossings.subList(1, crossings.size())) {
 
             if (crossing instanceof ExitEvent) {
-                charge = charge.add(
-                        new BigDecimal(minutesBetween(lastEvent.timestamp(), crossing.timestamp()))
-                                .multiply(CHARGE_RATE_POUNDS_PER_MINUTE));
+                duration = duration.add(
+                        new BigDecimal(minutesBetween(lastEvent.timestamp(), crossing.timestamp())));
             }
 
-            lastEvent = crossing;
+            lastEvent = crossing; // same
         }
 
-        return charge;
+        return duration;
     }
 
     private boolean previouslyRegistered(Vehicle vehicle) {
