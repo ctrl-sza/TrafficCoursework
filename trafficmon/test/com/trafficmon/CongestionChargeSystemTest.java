@@ -1,10 +1,25 @@
 package com.trafficmon;
 
 import org.junit.jupiter.api.Test;
+import org.jmock.Expectations;
+import org.jmock.integration.junit4.JUnitRuleMockery;
+import org.junit.Rule;
+
+
+import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class CongestionChargeSystemTest {
+
+   @Rule
+   JUnitRuleMockery context = new JUnitRuleMockery();
+
+    AccountsService acctServ = context.mock(AccountsService.class);
+    Vehicle carA = Vehicle.withRegistration("LR59 PFK");
+    Account myAccount = new Account("Vikash Panjiyar", carA, new BigDecimal(1000000));
+
+
 
    @Test
     void calculateChargesTest() {
@@ -20,5 +35,11 @@ class CongestionChargeSystemTest {
        // mock interfaces AccountService and Penalties Service to avoid tests failing cos of random amounts of credit in accounts
        // get string assertion that sysout is same as string we want
 
+
+      ccs.vehicleEnteringZone(carA);
+
+      ccs.vehicleLeavingZone(carA);
+
+      ccs.calculateCharges();
    }
 }
