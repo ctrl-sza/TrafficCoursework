@@ -43,7 +43,7 @@ public class CongestionChargeSystem {
                 OperationsTeam.getInstance().triggerInvestigationInto(vehicle); // if times of entry and exit not in time order trigger inspection
             } else {
 
-                BigDecimal charge = calculateDurationInZone(crossings);
+                BigDecimal charge = calculateCharge(calculateDurationInZone(crossings), crossings);
 
                 try {
                     RegisteredCustomerAccountsService.getInstance().accountFor(vehicle).deduct(charge);
