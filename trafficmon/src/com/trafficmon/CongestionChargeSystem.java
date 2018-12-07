@@ -56,22 +56,28 @@ public class CongestionChargeSystem {
         }
     }
 
-    private BigDecimal calculateCharge(BigDecimal duration) {
+    private BigDecimal calculateCharge(BigDecimal duration, List<ZoneBoundaryCrossing> crossings) {
 
         BigDecimal fourHours = new BigDecimal(240.0);
         BigDecimal charge = new BigDecimal(0);
 
         int comparison = duration.compareTo(fourHours);
+        /*  Comparison in BigDecimal:
+            Returns: -1, 0, or 1 as this BigDecimal is numerically less than, equal to, or greater than val. */
+
         if (comparison == 1) {
             charge = new BigDecimal(12);
         }
-
-        if (isBefore2pm())
+        else if (isBefore2pm(crossings) && (comparison == -1 || comparison == 0)) {
+            charge = new BigDecimal(6);
+        }
+        else if(!isBefore2pm(crossings) && (comparison == -1 || comparison == 0))
 
         return charge;
     }
 
     private boolean isBefore2pm(List<ZoneBoundaryCrossing> crossings) {
+        /* Compares a timestamp to check if its before 2pm */
         ZoneBoundaryCrossing firstCrossing = crossings.get(0);
 
 
@@ -90,20 +96,14 @@ public class CongestionChargeSystem {
 
         int comparison = dateFormatted.compareTo(twoPM);
 
-        if (comparison > 0) {
-            return  true;
-        }
-        if (comparison <= 0) {
-            return false;
-        }
+        if (comparison > 0) return true;
+        else return false;
     }
 
     private BigDecimal calculateDurationInZone(List<ZoneBoundaryCrossing> crossings) {
 
         BigDecimal duration = new BigDecimal(0);
-
         ZoneBoundaryCrossing lastEvent = crossings.get(0); //same
-
 
         for (ZoneBoundaryCrossing crossing : crossings.subList(1, crossings.size())) {
 
