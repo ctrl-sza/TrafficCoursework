@@ -59,21 +59,22 @@ public class CongestionChargeSystem {
     private BigDecimal calculateCharge(BigDecimal duration, List<ZoneBoundaryCrossing> crossings) {
 
         BigDecimal fourHours = new BigDecimal(240.0);
-        BigDecimal charge = new BigDecimal(0);
 
         int comparison = duration.compareTo(fourHours);
         /*  Comparison in BigDecimal:
             Returns: -1, 0, or 1 as this BigDecimal is numerically less than, equal to, or greater than val. */
 
         if (comparison == 1) {
-            charge = new BigDecimal(12);
+            return new BigDecimal(12);
         }
         else if (isBefore2pm(crossings) && (comparison == -1 || comparison == 0)) {
-            charge = new BigDecimal(6);
-        }
-        else if(!isBefore2pm(crossings) && (comparison == -1 || comparison == 0))
+            return new BigDecimal(6);
 
-        return charge;
+        }
+        else {
+            return new BigDecimal(4);
+        }
+
     }
 
     private boolean isBefore2pm(List<ZoneBoundaryCrossing> crossings) {
