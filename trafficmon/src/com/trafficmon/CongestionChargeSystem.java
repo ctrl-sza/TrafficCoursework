@@ -1,6 +1,7 @@
 package com.trafficmon;
 
 import  java.math.BigDecimal;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -82,13 +83,14 @@ public class CongestionChargeSystem {
             firstTime = lastEvent.timestamp();
         }
 
-        SimpleDateFormat sdf = new SimpleDateFormat("HHmm");
-        Date resultdate = new sdf.(firstTime);
+        Date date = new Date(firstTime);
+        DateFormat formatter = new SimpleDateFormat("HHmm");
+        formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+        String dateFormatted = formatter.format(date);
 
-        String string = resultdate.toString();
-        String twopm = "1400";
+        String twoPM = "1400";
 
-        int comparison = string.compareTo(twopm);
+        int comparison = dateFormatted.compareTo(twoPM);
 
         if (comparison > 0) {
             return  true;
