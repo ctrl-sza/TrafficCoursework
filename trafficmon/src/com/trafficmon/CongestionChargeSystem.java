@@ -72,18 +72,16 @@ public class CongestionChargeSystem {
     }
 
     private boolean isBefore2pm(List<ZoneBoundaryCrossing> crossings) {
-        long firstTime = 0;
-        ZoneBoundaryCrossing lastEvent = crossings.get(0);
+        ZoneBoundaryCrossing firstCrossing = crossings.get(0);
 
-        if (lastEvent instanceof EntryEvent) {
-            firstTime = lastEvent.timestamp();
-        }
-        else {
-            lastEvent = crossings.get(1);
-            firstTime = lastEvent.timestamp();
+
+        if (firstCrossing instanceof ExitEvent) {
+            firstCrossing = crossings.get(1);
         }
 
-        Date date = new Date(firstTime);
+        long firstEntryTime = firstCrossing.timestamp();
+
+        Date date = new Date(firstEntryTime);
         DateFormat formatter = new SimpleDateFormat("HHmm");
         formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
         String dateFormatted = formatter.format(date);
