@@ -135,43 +135,52 @@ public class CongestionChargeSystem {
             }
         }
 
-        /*
         public boolean secondEntryChecker() {
             // Checking if the car left and came back within 4 hours
-            ZoneBoundaryCrossing secondEntry = crossings.get(2);
-            if (secondEntry instanceof ExitEvent) {
-                secondEntry = crossings.get(4);
+            // Returns true if it leaves and comes back, and false if not
+            ZoneBoundaryCrossing firstEntry = crossings.get(0);
+            if (firstEntry instanceof ExitEvent) {
+                firstEntry = crossings.get(1);
             }
 
-            if
-        } */
+            try {
+                ZoneBoundaryCrossing secondEntry = crossings.get(2);
+                if (secondEntry instanceof ExitEvent) {
+                    secondEntry = crossings.get(3);
+                }
 
-        private boolean isBefore2pm(List<ZoneBoundaryCrossing> crossings) {
-            /* Compares a timestamp to check if its before 2pm */
-            ZoneBoundaryCrossing firstCrossing = crossings.get(0);
-
-
-            if (firstCrossing instanceof ExitEvent) {
-                firstCrossing = crossings.get(1);
+                long timeBetweenEntries = (minutesBetween(firstEntry.timestamp(),
+                        secondEntry.timestamp()));
+                if (timeBetweenEntries <= 240) {
+                    return false;
+                } else return true;
+            } catch (NullPointerException npe) {
+                return false;
             }
-
-            long firstEntryTime = firstCrossing.timestamp();
-
-            String twoPM = "1400";
-
-            int comparison = timeConverter(firstEntryTime).compareTo(twoPM);
-
-            if (comparison > 0) return true;
-            else return false;
-        }
-
-        private String timeConverter(long timestamp) {
-            Date date = new Date(timestamp);
-            DateFormat formatter = new SimpleDateFormat("HHmm");
-            formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
-            String dateFormatted = formatter.format(date);
-
-            return dateFormatted;
         }
     }
+
+    private boolean isBefore2pm(List<ZoneBoundaryCrossing> crossings) {
+        /* Compares a timestamp to check if its before 2pm */
+
+
+        long firstEntryTime = firstCrossing.timestamp();
+
+        String twoPM = "1400";
+
+        int comparison = timeConverter(firstEntryTime).compareTo(twoPM);
+
+        if (comparison > 0) return true;
+        else return false;
+    }
+
+    private String timeConverter(long timestamp) {
+        Date date = new Date(timestamp);
+        DateFormat formatter = new SimpleDateFormat("HHmm");
+        formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+        String dateFormatted = formatter.format(date);
+
+        return dateFormatted;
+    }
 }
+
