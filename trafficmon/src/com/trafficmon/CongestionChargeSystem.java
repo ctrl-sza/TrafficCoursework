@@ -66,7 +66,6 @@ public class CongestionChargeSystem {
         ZoneBoundaryCrossing lastEvent = crossings.get(0); //same
 
         for (ZoneBoundaryCrossing crossing : crossings.subList(1, crossings.size())) {
-
             if (crossing instanceof ExitEvent) {
                 duration = duration.add(
                         new BigDecimal(minutesBetween(lastEvent.timestamp(), crossing.timestamp())));
@@ -112,6 +111,7 @@ public class CongestionChargeSystem {
     }
 
     public class ChargeCalculator {
+        /* Using the new charging structure to calculate charges */
         private BigDecimal duration;
         private List<ZoneBoundaryCrossing> crossings;
 
@@ -127,15 +127,24 @@ public class CongestionChargeSystem {
 
             if (comparison == 1) {
                 return new BigDecimal(12);
-            }
-            else if (isBefore2pm(crossings) && (comparison == -1 || comparison == 0)) {
+            } else if (isBefore2pm(crossings) && (comparison == -1 || comparison == 0)) {
                 return new BigDecimal(6);
 
-            }
-            else {
+            } else {
                 return new BigDecimal(4);
             }
         }
+
+        /*
+        public boolean secondEntryChecker() {
+            // Checking if the car left and came back within 4 hours
+            ZoneBoundaryCrossing secondEntry = crossings.get(2);
+            if (secondEntry instanceof ExitEvent) {
+                secondEntry = crossings.get(4);
+            }
+
+            if
+        } */
 
         private boolean isBefore2pm(List<ZoneBoundaryCrossing> crossings) {
             /* Compares a timestamp to check if its before 2pm */
@@ -148,17 +157,21 @@ public class CongestionChargeSystem {
 
             long firstEntryTime = firstCrossing.timestamp();
 
-            Date date = new Date(firstEntryTime);
+            String twoPM = "1400";
+
+            int comparison = timeConverter(firstEntryTime).compareTo(twoPM);
+
+            if (comparison > 0) return true;
+            else return false;
+        }
+
+        private String timeConverter(long timestamp) {
+            Date date = new Date(timestamp);
             DateFormat formatter = new SimpleDateFormat("HHmm");
             formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
             String dateFormatted = formatter.format(date);
 
-            String twoPM = "1400";
-
-            int comparison = dateFormatted.compareTo(twoPM);
-
-            if (comparison > 0) return true;
-            else return false;
+            return dateFormatted;
         }
     }
 }
