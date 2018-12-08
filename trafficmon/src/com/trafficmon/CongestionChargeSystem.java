@@ -138,9 +138,8 @@ public class CongestionChargeSystem {
         }
 
         private boolean isBefore2pm(List<ZoneBoundaryCrossing> crossings) {
-            /* Compares a timestamp to check if its before 2pm */
-            ZoneBoundaryCrossing firstCrossing = crossings.get(0);
 
+            ZoneBoundaryCrossing firstCrossing = crossings.get(0);
 
             if (firstCrossing instanceof ExitEvent) {
                 firstCrossing = crossings.get(1);
