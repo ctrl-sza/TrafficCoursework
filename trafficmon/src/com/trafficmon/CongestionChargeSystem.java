@@ -56,47 +56,8 @@ public class CongestionChargeSystem {
 
     private BigDecimal calculateCharge(BigDecimal duration, List<ZoneBoundaryCrossing> crossings) {
 
-        BigDecimal fourHours = new BigDecimal(240.0);
+        return new ChargeCalculator(duration, crossings).invoke();
 
-        int comparison = duration.compareTo(fourHours);
-        /*  Comparison in BigDecimal:
-            Returns: -1, 0, or 1 as this BigDecimal is numerically less than, equal to, or greater than val. */
-
-        if (comparison == 1) {
-            return new BigDecimal(12);
-        }
-        else if (isBefore2pm(crossings) && (comparison == -1 || comparison == 0)) {
-            return new BigDecimal(6);
-
-        }
-        else {
-            return new BigDecimal(4);
-        }
-
-    }
-
-    private boolean isBefore2pm(List<ZoneBoundaryCrossing> crossings) {
-        /* Compares a timestamp to check if its before 2pm */
-        ZoneBoundaryCrossing firstCrossing = crossings.get(0);
-
-
-        if (firstCrossing instanceof ExitEvent) {
-            firstCrossing = crossings.get(1);
-        }
-
-        long firstEntryTime = firstCrossing.timestamp();
-
-        Date date = new Date(firstEntryTime);
-        DateFormat formatter = new SimpleDateFormat("HHmm");
-        formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
-        String dateFormatted = formatter.format(date);
-
-        String twoPM = "1400";
-
-        int comparison = dateFormatted.compareTo(twoPM);
-
-        if (comparison > 0) return true;
-        else return false;
     }
 
     private BigDecimal calculateDurationInZone(List<ZoneBoundaryCrossing> crossings) {
@@ -150,4 +111,54 @@ public class CongestionChargeSystem {
         return (int) Math.ceil((endTimeMs - startTimeMs) / (1000.0 * 60.0));
     }
 
+    public class ChargeCalculator {
+        private BigDecimal duration;
+        private List<ZoneBoundaryCrossing> crossings;
+
+        public ChargeCalculator(BigDecimal duration, List<ZoneBoundaryCrossing> crossings) {
+            this.duration = duration;
+            this.crossings = crossings;
+        }
+
+        public BigDecimal invoke() {
+            BigDecimal fourHours = new BigDecimal(240.0);
+
+            int comparison = duration.compareTo(fourHours);
+
+            if (comparison == 1) {
+                return new BigDecimal(12);
+            }
+            else if (isBefore2pm(crossings) && (comparison == -1 || comparison == 0)) {
+                return new BigDecimal(6);
+
+            }
+            else {
+                return new BigDecimal(4);
+            }
+        }
+
+        private boolean isBefore2pm(List<ZoneBoundaryCrossing> crossings) {
+            /* Compares a timestamp to check if its before 2pm */
+            ZoneBoundaryCrossing firstCrossing = crossings.get(0);
+
+
+            if (firstCrossing instanceof ExitEvent) {
+                firstCrossing = crossings.get(1);
+            }
+
+            long firstEntryTime = firstCrossing.timestamp();
+
+            Date date = new Date(firstEntryTime);
+            DateFormat formatter = new SimpleDateFormat("HHmm");
+            formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+            String dateFormatted = formatter.format(date);
+
+            String twoPM = "1400";
+
+            int comparison = dateFormatted.compareTo(twoPM);
+
+            if (comparison > 0) return true;
+            else return false;
+        }
+    }
 }

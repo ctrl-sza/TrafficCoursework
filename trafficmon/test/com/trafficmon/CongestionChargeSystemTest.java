@@ -13,11 +13,11 @@ import static org.junit.jupiter.api.Assertions.*;
 class CongestionChargeSystemTest {
 
    @Rule
-   JUnitRuleMockery context = new JUnitRuleMockery();
+   //JUnitRuleMockery context = new JUnitRuleMockery();
 
-    AccountsService acctServ = context.mock(AccountsService.class);
-    Vehicle carA = Vehicle.withRegistration("LR59 PFK");
-    Account myAccount = new Account("Vikash Panjiyar", carA, new BigDecimal(1000000));
+    //AccountsService acctServ = context.mock(AccountsService.class);
+    //Vehicle carA = Vehicle.withRegistration("LR59 PFK");
+    //Account myAccount = new Account("Vikash Panjiyar", carA, new BigDecimal(1000000));
 
 
 
@@ -36,10 +36,10 @@ class CongestionChargeSystemTest {
        // get string assertion that sysout is same as string we want
 
 
-      ccs.vehicleEnteringZone(carA);
+      //ccs.vehicleEnteringZone(carA);
 
-      ccs.vehicleLeavingZone(carA);
+      //ccs.vehicleLeavingZone(carA);
 
-      ccs.calculateAllCharges();
+      //ccs.calculateAllCharges();
    }
 }
