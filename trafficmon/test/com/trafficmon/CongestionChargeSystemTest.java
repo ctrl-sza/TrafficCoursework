@@ -31,7 +31,7 @@ class CongestionChargeSystemTest {
 
        ccs.vehicleLeavingZone(theFiat);
 
-       ccs.calculateCharges();
+       ccs.calculateAllCharges();
        // mock interfaces AccountService and Penalties Service to avoid tests failing cos of random amounts of credit in accounts
        // get string assertion that sysout is same as string we want
 
@@ -40,6 +40,6 @@ class CongestionChargeSystemTest {
 
       ccs.vehicleLeavingZone(carA);
 
-      ccs.calculateCharges();
+      ccs.calculateAllCharges();
    }
 }
