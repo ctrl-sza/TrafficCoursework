@@ -47,9 +47,7 @@ public class CongestionChargeSystem {
 
                 try {
                     RegisteredCustomerAccountsService.getInstance().accountFor(vehicle).deduct(charge);
-                } catch (InsufficientCreditException ice) {
-                    OperationsTeam.getInstance().issuePenaltyNotice(vehicle, charge);
-                } catch (AccountNotRegisteredException e) {
+                } catch (InsufficientCreditException | AccountNotRegisteredException ice) {
                     OperationsTeam.getInstance().issuePenaltyNotice(vehicle, charge);
                 }
             }
