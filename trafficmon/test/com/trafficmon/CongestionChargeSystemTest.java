@@ -7,6 +7,7 @@ import org.junit.Rule;
 
 
 import java.math.BigDecimal;
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,11 +48,18 @@ class CongestionChargeSystemTest {
 
    @Test
     void isAfter2pmTester () {
-       BigDecimal duration = new BigDecimal(0);
+       CongestionChargeSystem ccs = new CongestionChargeSystem();
+       Vehicle v = Vehicle.withRegistration("A123 XYZ");
        List<ZoneBoundaryCrossing> crossings = new ArrayList<ZoneBoundaryCrossing>();
+       ccs.vehicleEnteringZone(v);
+       long timestamp_one = crossings.get(0).timestamp();
+       timestamp_one = 100000000;
 
-       CongestionChargeSystem.ChargeCalculator cc = new CongestionChargeSystem.ChargeCalculator(duration, crossings);
-       cc.invoke();
+       ccs.vehicleLeavingZone(v);
+       long timestamp_two = crossings.get(1).timestamp();
+       timestamp_two = 120000000;
+
+       assertEquals(CongestionChargeSystem.isBefore2pm(crossings), false);
 
    }
-}
+           }
