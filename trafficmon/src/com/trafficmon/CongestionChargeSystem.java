@@ -7,35 +7,29 @@ import java.util.*;
 
 public class CongestionChargeSystem {
 
-    private final List<ZoneBoundaryCrossing> eventLog = new ArrayList<ZoneBoundaryCrossing>();
+    private final Map<Vehicle, List<ZoneBoundaryCrossing>> eventLog = new HashMap<>();
     /*
         every time vehicle crosses boundary, ZBC added to event log.
         ZBC contains reference to vehicle and time of that crossing
      */
 
     public void vehicleEnteringZone(Vehicle vehicle) {
-        eventLog.add(new EntryEvent(vehicle));
+        if(!previouslyRegistered(vehicle)) {
+            eventLog.put(vehicle, new ArrayList<>());
+        }
+        eventLog.get(vehicle).add(new EntryEvent(vehicle));
     }
 
     public void vehicleLeavingZone(Vehicle vehicle) {
         if (!previouslyRegistered(vehicle)) {
             return;
         }
-        eventLog.add(new ExitEvent(vehicle));
+        eventLog.get(vehicle).add(new ExitEvent(vehicle));
     }
 
     public void calculateAllCharges() {
 
-        Map<Vehicle, List<ZoneBoundaryCrossing>> crossingsByVehicle = new HashMap<Vehicle, List<ZoneBoundaryCrossing>>();
-
-        for (ZoneBoundaryCrossing crossing : eventLog) {
-            if (!crossingsByVehicle.containsKey(crossing.getVehicle())) { // if vehicle not in crossingsByVehicle
-                crossingsByVehicle.put(crossing.getVehicle(), new ArrayList<ZoneBoundaryCrossing>()); // add key (vehicle) and value (empty arraylist)
-            }
-            crossingsByVehicle.get(crossing.getVehicle()).add(crossing); // gets arraylist (value in hash map) and adds ZBC to it
-        }
-
-        for (Map.Entry<Vehicle, List<ZoneBoundaryCrossing>> vehicleCrossings : crossingsByVehicle.entrySet()) {
+        for (Map.Entry<Vehicle, List<ZoneBoundaryCrossing>> vehicleCrossings : eventLog.entrySet()) {
             Vehicle vehicle = vehicleCrossings.getKey();
             List<ZoneBoundaryCrossing> crossings = vehicleCrossings.getValue();
 
@@ -78,12 +72,7 @@ public class CongestionChargeSystem {
     }
 
     private boolean previouslyRegistered(Vehicle vehicle) {
-        for (ZoneBoundaryCrossing crossing : eventLog) {
-            if (crossing.getVehicle().equals(vehicle)) {
-                return true;
-            }
-        }
-        return false;
+        return eventLog.containsKey(vehicle);
     }
 
     private boolean checkOrderingOf(List<ZoneBoundaryCrossing> crossings) {
