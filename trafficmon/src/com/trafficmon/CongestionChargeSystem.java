@@ -99,7 +99,7 @@ public class CongestionChargeSystem {
         return (int) Math.ceil((endTimeMs - startTimeMs) / (1000.0 * 60.0));
     }
 
-    public class ChargeCalculator {
+    public static class ChargeCalculator {
         /* Using the new charging structure to calculate charges */
         private BigDecimal duration;
         private List<ZoneBoundaryCrossing> crossings;
