@@ -7,6 +7,7 @@ import org.junit.Rule;
 
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -41,5 +42,17 @@ class CongestionChargeSystemTest {
       //ccs.vehicleLeavingZone(carA);
 
       //ccs.calculateAllCharges();
+   }
+
+   @Test
+    void isAfter2pmTester () {
+       BigDecimal duration = new BigDecimal(0);
+       List<ZoneBoundaryCrossing> crossings = [];
+
+       CongestionChargeSystem.ChargeCalculator cc = new CongestionChargeSystem.ChargeCalculator(BigDecimal duration,
+               List<ZoneBoundaryCrossing> crossings);
+
+
+
    }
 }
