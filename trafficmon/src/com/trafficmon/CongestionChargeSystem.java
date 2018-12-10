@@ -7,21 +7,21 @@ import java.util.*;
 
 public class CongestionChargeSystem {
 
-    private final Map<Vehicle, List<ZoneBoundaryCrossing>> eventLog = new HashMap<>();
+    private final HashMap<Vehicle, List<ZoneBoundaryCrossing>> eventLog = new HashMap<>();
     /*
         every time vehicle crosses boundary, ZBC added to event log.
         ZBC contains reference to vehicle and time of that crossing
      */
 
     public void vehicleEnteringZone(Vehicle vehicle) {
-        if(!previouslyRegistered(vehicle)) {
+        if(previouslyRegistered(vehicle)) {
             eventLog.put(vehicle, new ArrayList<>());
         }
         eventLog.get(vehicle).add(new EntryEvent(vehicle));
     }
 
     public void vehicleLeavingZone(Vehicle vehicle) {
-        if (!previouslyRegistered(vehicle)) {
+        if (previouslyRegistered(vehicle)) {
             return;
         }
         eventLog.get(vehicle).add(new ExitEvent(vehicle));
@@ -72,7 +72,7 @@ public class CongestionChargeSystem {
     }
 
     private boolean previouslyRegistered(Vehicle vehicle) {
-        return eventLog.containsKey(vehicle);
+        return !eventLog.containsKey(vehicle);
     }
 
     private boolean checkOrderingOf(List<ZoneBoundaryCrossing> crossings) {
@@ -114,9 +114,9 @@ public class CongestionChargeSystem {
 
             int comparison = duration.compareTo(fourHours);
 
-            if (comparison == 1) {
+            if (comparison > 0) {
                 return new BigDecimal(12);
-            } else if (isBefore2pm(crossings) && (comparison == -1 || comparison == 0)) {
+            } else if (isBefore2pm(crossings)) {
                 return new BigDecimal(6);
 
             } else {
@@ -140,9 +140,7 @@ public class CongestionChargeSystem {
 
                 long timeBetweenEntries = (minutesBetween(firstEntry.timestamp(),
                         secondEntry.timestamp()));
-                if (timeBetweenEntries <= 240) {
-                    return false;
-                } else return true;
+                return timeBetweenEntries > 240;
             } catch (NullPointerException npe) {
                 return false;
             }
@@ -162,17 +160,15 @@ public class CongestionChargeSystem {
 
         int comparison = timeConverter(firstEntryTime).compareTo(twoPM);
 
-        if (comparison > 0) return true;
-        else return false;
+        return comparison > 0;
     }
 
     private String timeConverter(long timestamp) {
         Date date = new Date(timestamp);
         DateFormat formatter = new SimpleDateFormat("HHmm");
         formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
-        String dateFormatted = formatter.format(date);
 
-        return dateFormatted;
+        return formatter.format(date);
     }
 }
 
