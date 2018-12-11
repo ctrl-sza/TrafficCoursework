@@ -71,7 +71,7 @@ public class CongestionChargeSystem {
         return duration;
     }
 
-    private boolean previouslyRegistered(Vehicle vehicle) {
+    public boolean previouslyRegistered(Vehicle vehicle) {
         return !eventLog.containsKey(vehicle);
     }
 
@@ -129,7 +129,7 @@ public class CongestionChargeSystem {
             }
         }
 
-        public boolean secondEntryChecker() {
+        /*public boolean secondEntryChecker() {
             // Checking if the car left and came back within 4 hours
             // Returns true if it leaves and comes back, and false if not
             ZoneBoundaryCrossing firstEntry = crossings.get(0);
@@ -149,7 +149,7 @@ public class CongestionChargeSystem {
             } catch (NullPointerException npe) {
                 return false;
             }
-        }
+        }*/
     }
 
     private boolean isBefore2pm(List<ZoneBoundaryCrossing> crossings) {

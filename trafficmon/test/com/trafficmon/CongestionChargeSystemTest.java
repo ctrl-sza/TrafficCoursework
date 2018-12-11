@@ -8,6 +8,7 @@ import org.junit.Rule;
 
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -22,6 +23,7 @@ class CongestionChargeSystemTest {
     //Account myAccount = new Account("Vikash Panjiyar", carA, new BigDecimal(1000000))
     CongestionChargeSystem ccs = new CongestionChargeSystem();
     Vehicle theFiat = Vehicle.withRegistration("A123 XYZ");
+    Vehicle theVw = Vehicle.withRegistration("F773 3RE");
 
 
    @Test
@@ -51,6 +53,7 @@ class CongestionChargeSystemTest {
         Assert.assertEquals(ccs.getEventLog(theFiat).size(), 2);
 
     }
+
 
    /*@Test
     void isAfter2pmTester () {
