@@ -1,5 +1,6 @@
 package com.trafficmon;
 
+import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.jmock.Expectations;
 import org.jmock.integration.junit4.JUnitRuleMockery;
@@ -18,15 +19,14 @@ class CongestionChargeSystemTest {
 
     //AccountsService acctServ = context.mock(AccountsService.class);
     //Vehicle carA = Vehicle.withRegistration("LR59 PFK");
-    //Account myAccount = new Account("Vikash Panjiyar", carA, new BigDecimal(1000000));
-
+    //Account myAccount = new Account("Vikash Panjiyar", carA, new BigDecimal(1000000))
+    CongestionChargeSystem ccs = new CongestionChargeSystem();
+    Vehicle theFiat = Vehicle.withRegistration("A123 XYZ");
 
 
    @Test
     void calculateChargesTest() {
-       CongestionChargeSystem ccs = new CongestionChargeSystem();
-
-       Vehicle theFiat = Vehicle.withRegistration("A123 XYZ"); // using factory method (public)
+        // using factory method (public)
 
        ccs.vehicleEnteringZone(theFiat);
 
@@ -44,7 +44,15 @@ class CongestionChargeSystemTest {
       //ccs.calculateAllCharges();
    }
 
-   @Test
+    @Test
+    public void checkIfEventLogSizeIsCorrect() {
+        ccs.vehicleEnteringZone(theFiat);
+        ccs.vehicleLeavingZone(theFiat);
+        Assert.assertEquals(ccs.getEventLog(theFiat).size(), 2);
+
+    }
+
+   /*@Test
     void isAfter2pmTester () {
        BigDecimal duration = new BigDecimal(0);
        List<ZoneBoundaryCrossing> crossings = [];
@@ -54,5 +62,5 @@ class CongestionChargeSystemTest {
 
 
 
-   }
+   }*/
 }

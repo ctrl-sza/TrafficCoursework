@@ -95,6 +95,11 @@ public class CongestionChargeSystem {
         return true;
     }
 
+    public List<ZoneBoundaryCrossing> getEventLog(Vehicle vehicle)
+    {
+        return eventLog.get(vehicle);
+    }
+
     private int minutesBetween(long startTimeMs, long endTimeMs) {
         return (int) Math.ceil((endTimeMs - startTimeMs) / (1000.0 * 60.0));
     }
