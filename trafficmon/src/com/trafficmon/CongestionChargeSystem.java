@@ -38,13 +38,16 @@ public class CongestionChargeSystem {
             } else {
 
                 BigDecimal charge = calculateCharge(calculateDurationInZone(crossings), crossings);
-
-                try {
-                    RegisteredCustomerAccountsService.getInstance().accountFor(vehicle).deduct(charge);
-                } catch (InsufficientCreditException | AccountNotRegisteredException ice) {
-                    OperationsTeam.getInstance().issuePenaltyNotice(vehicle, charge);
-                }
+                deductCharge(vehicle, charge);
             }
+        }
+    }
+
+    private void deductCharge(Vehicle vehicle, BigDecimal charge) {
+        try {
+            RegisteredCustomerAccountsService.getInstance().accountFor(vehicle).deduct(charge);
+        } catch (InsufficientCreditException | AccountNotRegisteredException ice) {
+            OperationsTeam.getInstance().issuePenaltyNotice(vehicle, charge);
         }
     }
 
