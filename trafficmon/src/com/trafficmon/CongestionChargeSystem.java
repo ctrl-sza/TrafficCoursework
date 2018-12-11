@@ -13,14 +13,14 @@ public class CongestionChargeSystem {
         ZBC contains reference to vehicle and time of that crossing
      */
 
-    public void vehicleEnteringZone(Vehicle vehicle) {
+    void vehicleEnteringZone(Vehicle vehicle) {
         if(previouslyRegistered(vehicle)) {
             eventLog.put(vehicle, new ArrayList<>());
         }
         eventLog.get(vehicle).add(new EntryEvent(vehicle));
     }
 
-    public void vehicleLeavingZone(Vehicle vehicle) {
+    void vehicleLeavingZone(Vehicle vehicle) {
         if (previouslyRegistered(vehicle)) {
             return;
         }
@@ -74,7 +74,7 @@ public class CongestionChargeSystem {
         return duration;
     }
 
-    public boolean previouslyRegistered(Vehicle vehicle) {
+    private boolean previouslyRegistered(Vehicle vehicle) {
         return !eventLog.containsKey(vehicle);
     }
 
@@ -98,7 +98,7 @@ public class CongestionChargeSystem {
         return true;
     }
 
-    public List<ZoneBoundaryCrossing> getEventLog(Vehicle vehicle)
+    List<ZoneBoundaryCrossing> getEventLog(Vehicle vehicle)
     {
         return eventLog.get(vehicle);
     }
@@ -107,30 +107,7 @@ public class CongestionChargeSystem {
         return (int) Math.ceil((endTimeMs - startTimeMs) / (1000.0 * 60.0));
     }
 
-    public class ChargeCalculator {
-        /* Using the new charging structure to calculate charges */
-        private BigDecimal duration;
-        private List<ZoneBoundaryCrossing> crossings;
 
-        public ChargeCalculator(BigDecimal duration, List<ZoneBoundaryCrossing> crossings) {
-            this.duration = duration;
-            this.crossings = crossings;
-        }
-
-        public BigDecimal invoke() {
-            BigDecimal fourHours = new BigDecimal(240.0);
-
-            int comparison = duration.compareTo(fourHours);
-
-            if (comparison > 0) {
-                return new BigDecimal(12);
-            } else if (isBefore2pm(crossings)) {
-                return new BigDecimal(6);
-
-            } else {
-                return new BigDecimal(4);
-            }
-        }
 
         /*public boolean secondEntryChecker() {
             // Checking if the car left and came back within 4 hours
@@ -155,28 +132,6 @@ public class CongestionChargeSystem {
         }*/
     }
 
-    private boolean isBefore2pm(List<ZoneBoundaryCrossing> crossings) {
-        /* Compares a timestamp to check if its before 2pm */
-        ZoneBoundaryCrossing firstCrossing = crossings.get(0);
-        if (firstCrossing instanceof ExitEvent) {
-            firstCrossing = crossings.get(1);
-        }
 
-        long firstEntryTime = firstCrossing.timestamp();
 
-        String twoPM = "1400";
-
-        int comparison = timeConverter(firstEntryTime).compareTo(twoPM);
-
-        return comparison > 0;
-    }
-
-    private String timeConverter(long timestamp) {
-        Date date = new Date(timestamp);
-        DateFormat formatter = new SimpleDateFormat("HHmm");
-        formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
-
-        return formatter.format(date);
-    }
-}
 
