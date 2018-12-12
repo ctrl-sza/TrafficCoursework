@@ -7,29 +7,45 @@ import java.util.*;
 
 public class CongestionChargeSystem {
 
-    private final HashMap<Vehicle, List<ZoneBoundaryCrossing>> eventLog = new HashMap<>();
-    /*
-        every time vehicle crosses boundary, ZBC added to event log.
-        ZBC contains reference to vehicle and time of that crossing
-     */
+    private final  List<ZoneBoundaryCrossing> eventLog = new ArrayList<ZoneBoundaryCrossing>();
+
+    public List<ZoneBoundaryCrossing> getEventLog() { return eventLog; }
+
+    AccountsService acctServ;
+
+    public CongestionChargeSystem() {
+        this.acctServ = RegisteredCustomerAccountsService.getInstance();
+        // on normal instantiation of the CCS the list in RegCustAcctServ is used (with randomised balances)
+    }
+
+    // Constructor for mocking
+    public CongestionChargeSystem(AccountsService acctServ) {
+        this.acctServ = acctServ;
+    }
 
     void vehicleEnteringZone(Vehicle vehicle) {
-        if(previouslyRegistered(vehicle)) {
-            eventLog.put(vehicle, new ArrayList<>());
-        }
-        eventLog.get(vehicle).add(new EntryEvent(vehicle));
+            eventLog.add(new EntryEvent(vehicle));
     }
 
     void vehicleLeavingZone(Vehicle vehicle) {
-        if (previouslyRegistered(vehicle)) {
+        if (!previouslyRegistered(vehicle)) {
             return;
         }
-        eventLog.get(vehicle).add(new ExitEvent(vehicle));
+        eventLog.add(new ExitEvent(vehicle));
     }
 
     public void calculateAllCharges() {
 
-        for (Map.Entry<Vehicle, List<ZoneBoundaryCrossing>> vehicleCrossings : eventLog.entrySet()) {
+        Map<Vehicle, List<ZoneBoundaryCrossing>> crossingsByVehicle = new HashMap<Vehicle, List<ZoneBoundaryCrossing>>();
+
+        for (ZoneBoundaryCrossing crossing : eventLog) {
+            if (!crossingsByVehicle.containsKey(crossing.getVehicle())) {
+                crossingsByVehicle.put(crossing.getVehicle(), new ArrayList<ZoneBoundaryCrossing>());
+            }
+            crossingsByVehicle.get(crossing.getVehicle()).add(crossing);
+        }
+
+        for (Map.Entry<Vehicle, List<ZoneBoundaryCrossing>> vehicleCrossings : crossingsByVehicle.entrySet()) {
             Vehicle vehicle = vehicleCrossings.getKey();
             List<ZoneBoundaryCrossing> crossings = vehicleCrossings.getValue();
 
@@ -51,7 +67,7 @@ public class CongestionChargeSystem {
         }
     }
 
-    private BigDecimal calculateCharge(BigDecimal duration, List<ZoneBoundaryCrossing> crossings) {
+    public BigDecimal calculateCharge(BigDecimal duration, List<ZoneBoundaryCrossing> crossings) {
 
         return new ChargeCalculator(duration, crossings).invoke();
 
@@ -74,8 +90,17 @@ public class CongestionChargeSystem {
         return duration;
     }
 
+    public BigDecimal getDurationInZone(List<ZoneBoundaryCrossing> crossings) {
+        return calculateDurationInZone(crossings);
+    }
+
     private boolean previouslyRegistered(Vehicle vehicle) {
-        return !eventLog.containsKey(vehicle);
+        for(ZoneBoundaryCrossing crossing : eventLog) {
+            if(crossing.getVehicle().equals(vehicle)){
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean checkOrderingOf(List<ZoneBoundaryCrossing> crossings) {
@@ -98,10 +123,6 @@ public class CongestionChargeSystem {
         return true;
     }
 
-    List<ZoneBoundaryCrossing> getEventLog(Vehicle vehicle)
-    {
-        return eventLog.get(vehicle);
-    }
 
     private int minutesBetween(long startTimeMs, long endTimeMs) {
         return (int) Math.ceil((endTimeMs - startTimeMs) / (1000.0 * 60.0));

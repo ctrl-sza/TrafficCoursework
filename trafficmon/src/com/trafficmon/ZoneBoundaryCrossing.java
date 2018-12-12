@@ -7,7 +7,7 @@ import java.util.Calendar;
 public abstract class ZoneBoundaryCrossing {
 
     private final Vehicle vehicle;
-    private final long time;
+    private long time;
 
 
     public ZoneBoundaryCrossing(Vehicle vehicle) {
@@ -22,4 +22,6 @@ public abstract class ZoneBoundaryCrossing {
     public long timestamp() {
         return time;
     }
+
+    public void setTime(long time) { this.time = time;}
 }

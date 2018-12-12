@@ -11,14 +11,16 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.*;
 
 class CongestionChargeSystemTest {
 
    @Rule
-   //JUnitRuleMockery context = new JUnitRuleMockery();
+   public JUnitRuleMockery context = new JUnitRuleMockery();
+   AccountsService acctServ = context.mock(AccountsService.class);
+   CongestionChargeSystem mockCcs = new CongestionChargeSystem(acctServ);
 
-    //AccountsService acctServ = context.mock(AccountsService.class);
     //Vehicle carA = Vehicle.withRegistration("LR59 PFK");
     //Account myAccount = new Account("Vikash Panjiyar", carA, new BigDecimal(1000000))
     CongestionChargeSystem ccs = new CongestionChargeSystem();
@@ -38,19 +40,39 @@ class CongestionChargeSystemTest {
        // mock interfaces AccountService and Penalties Service to avoid tests failing cos of random amounts of credit in accounts
        // get string assertion that sysout is same as string we want
 
-
-      //ccs.vehicleEnteringZone(carA);
-
-      //ccs.vehicleLeavingZone(carA);
-
-      //ccs.calculateAllCharges();
    }
 
     @Test
     public void checkIfEventLogSizeIsCorrect() {
         ccs.vehicleEnteringZone(theFiat);
         ccs.vehicleLeavingZone(theFiat);
-        Assert.assertEquals(ccs.getEventLog(theFiat).size(), 2);
+        Assert.assertEquals(ccs.getEventLog().size(), 2);
+
+    }
+
+    @Test
+    public void calculateChargeForOneHourInMorning() {
+       mockCcs.vehicleEnteringZone(theVw);
+       mockCcs.vehicleLeavingZone(theVw);
+       mockCcs.getEventLog().get(0).setTime(0); // 0000hrs
+       mockCcs.getEventLog().get(1).setTime(3600000); // 0100hrs
+
+       BigDecimal charge = mockCcs.calculateCharge(mockCcs.getDurationInZone(mockCcs.getEventLog()), mockCcs.getEventLog());
+
+       Assert.assertThat(charge, is(new BigDecimal(4)));
+
+    }
+
+    @Test
+    public void calculateChargeForOneHourInAfternoon() {
+        mockCcs.vehicleEnteringZone(theVw);
+        mockCcs.vehicleLeavingZone(theVw);
+        mockCcs.getEventLog().get(0).setTime(54000000); // 1500hrs
+        mockCcs.getEventLog().get(1).setTime(57600000); // 1600hrs
+
+        BigDecimal charge = mockCcs.calculateCharge(mockCcs.getDurationInZone(mockCcs.getEventLog()), mockCcs.getEventLog());
+
+        Assert.assertThat(charge, is(new BigDecimal(6)));
 
     }
 
