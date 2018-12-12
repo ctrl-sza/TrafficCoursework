@@ -45,7 +45,7 @@ public class ChargeCalculator {
 
             int comparison = timeConverter(firstEntryTime).compareTo(twoPM);
 
-            return comparison > 0;
+            return comparison < 0;
         }
 
         private String timeConverter(long timestamp) {

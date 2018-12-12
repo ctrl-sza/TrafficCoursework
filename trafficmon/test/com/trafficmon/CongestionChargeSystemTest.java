@@ -59,7 +59,7 @@ class CongestionChargeSystemTest {
 
        BigDecimal charge = mockCcs.calculateCharge(mockCcs.getDurationInZone(mockCcs.getEventLog()), mockCcs.getEventLog());
 
-       Assert.assertThat(charge, is(new BigDecimal(4)));
+       Assert.assertThat(charge, is(new BigDecimal(6)));
 
     }
 
@@ -72,7 +72,20 @@ class CongestionChargeSystemTest {
 
         BigDecimal charge = mockCcs.calculateCharge(mockCcs.getDurationInZone(mockCcs.getEventLog()), mockCcs.getEventLog());
 
-        Assert.assertThat(charge, is(new BigDecimal(6)));
+        Assert.assertThat(charge, is(new BigDecimal(4)));
+
+    }
+
+    @Test
+    public void calculateChargeForOverFourHoursInZone() {
+        mockCcs.vehicleEnteringZone(theVw);
+        mockCcs.vehicleLeavingZone(theVw);
+        mockCcs.getEventLog().get(0).setTime(0); // 1500hrs
+        mockCcs.getEventLog().get(1).setTime(57600000); // 1600hrs
+
+        BigDecimal charge = mockCcs.calculateCharge(mockCcs.getDurationInZone(mockCcs.getEventLog()), mockCcs.getEventLog());
+
+        Assert.assertThat(charge, is(new BigDecimal(12)));
 
     }
 
